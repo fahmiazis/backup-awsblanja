@@ -4,18 +4,19 @@ const { createItemModel, createItemModel1, getDetailItemModel, getItemModel, get
 
 module.exports = {
   createItem: (req, res) => {
-    const { name, price, description, category } = req.body
+    const { name, price, description, category, picture = `uploads/${req.file.filename}` } = req.body
     if (name && price && description && category) {
       createItemModel1([category], result => {
         const id = result[0].id
         if (category == id) {
-          createItemModel([name, price, description, category], result => {
+          createItemModel([name, price, description, category, picture], result => {
             res.status(201).send({
               success: true,
               message: 'Item has been created',
               data: {
                 id: res.insertId,
-                ...req.body
+                ...req.body,
+                picture
               }
             })
           })

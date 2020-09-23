@@ -8,7 +8,7 @@ module.exports = {
     })
   },
   createItemModel: (arr, cb) => {
-    db.query(`INSERT INTO ${table} (name, price, description, category) VALUES ('${arr[0]}', ${arr[1]}, '${arr[2]}', '${arr[3]}')`, (_err, result, _fields) => {
+    db.query(`INSERT INTO ${table} (name, price, description, category, picture) VALUES ("${arr[0]}", ${arr[1]}, "${arr[2]}", "${arr[3]}", "${arr[4]}")`, (_err, result, _fields) => {
       cb(result)
     })
   },
@@ -65,4 +65,11 @@ module.exports = {
       cb(result)
     })
   }
+  // getUserByCondition: (cond)=>{
+  //   return usertable.filter(o=>{
+  //     if(cond.email === o.email && cond.password === o.passwod){
+  //       ret
+  //     }
+  //   })
+  // }
 }
