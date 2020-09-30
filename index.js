@@ -1,22 +1,35 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+
 const productRouter = require('./src/routes/product')
 const categoryRouter = require('./src/routes/category')
 const cartRouter = require('./src/routes/cart')
-// const userRoute = require('./src/routes/users')
+const roleRouter = require('./src/routes/roles')
+const userRoute = require('./src/routes/users')
+const condition = require('./src/routes/conditions')
+const home = require('./src/routes/home')
+const authRoute = require('./src/routes/auth')
+const profileroute = require('./src/routes/profile')
 const cors = require('cors')
+// const { APP_URL } = process.env
+require('dotenv/config')
 
 const app = express()
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }))
 
-// const authMiddleware = require('./src/middlewares/auth')
+const authMiddleware = require('./src/middlewares/auth')
 
-// app.use('/users', authMiddleware, userRoute)
-app.use('/uploads', express.static('E:/riset3/src/assets/uploads/'))
-app.use('/product', productRouter)
-app.use('/category', categoryRouter)
-app.use('/cart', cartRouter)
+app.use('/auth', authRoute)
+app.use('/users', authMiddleware, userRoute)
+app.use('/uploads', express.static('assets/uploads/'))
+app.use('/product', authMiddleware, productRouter)
+app.use('/home', home)
+app.use('/profile', authMiddleware, profileroute)
+app.use('/category', authMiddleware, categoryRouter)
+app.use('/cart', authMiddleware, cartRouter)
+app.use('/roles', authMiddleware, roleRouter)
+app.use('/conditions', condition)
 
 app.listen(8080, () => {
   console.log('App listening on port 8080')
