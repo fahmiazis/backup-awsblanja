@@ -18,7 +18,7 @@ module.exports = {
     })
   },
   getCatModel: (arr, cb) => {
-    const query = `SELECT * FROM ${table} WHERE ${arr[0]} LIKE '%${arr[1]}%' ORDER BY ${arr[4]} ${arr[5]} LIMIT ${arr[2]} OFFSET ${(arr[3] - 1) * arr[2]}`
+    const query = `SELECT category FROM ${table} WHERE ${arr[0]} LIKE '%${arr[1]}%' ORDER BY ${arr[4]} ${arr[5]} LIMIT ${arr[2]} OFFSET ${(arr[3] - 1) * arr[2]}`
     db.query(query, (err, result, _field) => {
       cb(err, result)
     })

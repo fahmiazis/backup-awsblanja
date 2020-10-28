@@ -11,7 +11,7 @@ const home = require('./src/routes/home')
 const authRoute = require('./src/routes/auth')
 const profileroute = require('./src/routes/profile')
 const cors = require('cors')
-// const { APP_URL } = process.env
+// const APP_URL  = process.env
 require('dotenv/config')
 
 const app = express()
@@ -29,7 +29,7 @@ app.use('/profile', authMiddleware, profileroute)
 app.use('/category', authMiddleware, categoryRouter)
 app.use('/cart', authMiddleware, cartRouter)
 app.use('/roles', authMiddleware, roleRouter)
-app.use('/conditions', condition)
+app.use('/conditions', authMiddleware, condition)
 
 app.listen(8080, () => {
   console.log('App listening on port 8080')

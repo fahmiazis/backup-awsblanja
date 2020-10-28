@@ -59,7 +59,7 @@ module.exports = {
           getItemModel1([searchKey, searchValue], data => {
             const { count } = data[0]
             pageInfo.count = count
-            pageInfo.pages = Math.round(count / limit)
+            pageInfo.pages = Math.ceil(count / limit)
 
             const { pages, currentPage } = pageInfo
             if (currentPage < pages) {

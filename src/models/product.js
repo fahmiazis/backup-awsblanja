@@ -1,5 +1,5 @@
 const db = require('../helpers/db')
-const table = 'product'
+const table = 'products'
 
 module.exports = {
   getDetailItemModel: (id, cb) => {
@@ -8,12 +8,22 @@ module.exports = {
     })
   },
   createItemModel: (arr, cb) => {
-    db.query(`INSERT INTO ${table} (name, price, description, category, picture) VALUES ("${arr[0]}", ${arr[1]}, "${arr[2]}", "${arr[3]}", "${arr[4]}")`, (_err, result, _fields) => {
+    db.query(`INSERT INTO ${table} (name, price, quantity, condition_id, description, category_id) VALUES ("${arr[0]}", ${arr[1]}, ${arr[2]}, ${arr[3]}, "${arr[4]}", ${arr[5]})`, (_err, result, _fields) => {
       cb(result)
     })
   },
-  createItemModel1: (arr, cb) => {
+  validateCat: (arr, cb) => {
     db.query(`SELECT * FROM category WHERE id LIKE '%${arr[0]}%'`, (_err, result, _fields) => {
+      cb(result)
+    })
+  },
+  validateCond: (arr, cb) => {
+    db.query(`SELECT * FROM conditions WHERE id LIKE '%${arr[0]}%'`, (_err, result, _fields) => {
+      cb(result)
+    })
+  },
+  postPictModel: (arr, cb) => {
+    db.query(`INSERT INTO product_images (product_id, url) VALUES (${arr[0]}, '${arr[1]}')`, (_err, result, _field) => {
       cb(result)
     })
   },
@@ -65,11 +75,4 @@ module.exports = {
       cb(result)
     })
   }
-  // getUserByCondition: (cond)=>{
-  //   return usertable.filter(o=>{
-  //     if(cond.email === o.email && cond.password === o.passwod){
-  //       ret
-  //     }
-  //   })
-  // }
 }

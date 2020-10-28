@@ -15,7 +15,7 @@ module.exports = {
           const role = result[0].role_id
           bcrypt.compare(password, result[0].password, function (_err, result) {
             if (result === true) {
-              jwt.sign({ id: result.id }, 'KODERAHASIA', (_err, token) => {
+              jwt.sign({ id: iduser, role: role }, 'KODERAHASIA', (_err, token) => {
                 return responseStandard(res, 'login success', { user: `${iduser}`, role: `${role}`, Token: `${token}` })
               })
             } else {
@@ -61,13 +61,19 @@ module.exports = {
               id: result.insertId,
               ...results
             }
-            usersModel.createDetailUsers([results.name, results.phone_number, results.store, result.id], (data) => {
+            usersModel.createDetailUsers([results.name, results.phone_number, result.id, results.email], (data) => {
               if (data.affectedRows) {
-                data = {
-                  id: data.insertId,
-                  ...results
-                }
-                return responseStandard(res, 'Create user successfully', { data })
+                usersModel.createDetailSeller([results.store, results.phone_number, result.id, results.email], (data) => {
+                  if (data.affectedRows) {
+                    data = {
+                      id: data.insertId,
+                      ...results
+                    }
+                    return responseStandard(res, 'Create user successfully', { data })
+                  } else {
+                    return responseStandard(res, 'Failed to create user', {}, 401, false)
+                  }
+                })
               } else {
                 return responseStandard(res, 'Failed to create user', {}, 401, false)
               }
@@ -108,69 +114,23 @@ module.exports = {
               id: result.insertId,
               ...results
             }
-            usersModel.createDetailUsers([results.name, [], [], result.id], (data) => {
+            usersModel.createDetailUsers([results.name, 0, result.id, results.email], (data) => {
               if (data.affectedRows) {
                 data = {
                   id: data.insertId,
-                  ...results
+                  name: results.name,
+                  email: results.email
                 }
-                return responseStandard(res, 'Create user successfully', { data })
+                return responseStandard(res, 'register successfully', { data })
               } else {
-                return responseStandard(res, 'Failed to create user', {}, 401, false)
+                return responseStandard(res, 'Failed to register', {}, 401, false)
               }
             })
           } else {
-            return responseStandard(res, 'Failed to create user', {}, 500, false)
+            return responseStandard(res, 'Failed to register', {}, 500, false)
           }
         })
       }
-    }
-  },
-  getDetailProfile: (req, res) => {
-    const { id } = req.params
-    usersModel.getDetailProfile(id, result => {
-      if (result.length) {
-        responseStandard(res, ` User ${id}`, { data: result })
-      } else {
-        responseStandard(res, 'User Not found', {}, 401, false)
-      }
-    })
-  },
-  updateProfileCustomer: (req, res) => {
-    const { id } = req.params
-    const { name, email, phone, gender, birthday, store } = req.body
-    if (name.trim() || email.trim() || phone.trim() || gender.trim() || birthday.trim() || store.trim()) {
-      usersModel.getDetailProfile(id, result => {
-        if (result.length) {
-          if (result.role_id !== 3) {
-            responseStandard(res, 'user not a custommer')
-          } else {
-            const data = Object.entries(req.body).map(item => {
-              return parseInt(item[1]) > 0 ? `${item[0]}=${item[1]}` : `${item[0]}='${item[1]}'`
-            })
-            usersModel.updatePartialProfile([id, data], result => {
-              if (result.affectedRows) {
-                responseStandard(res, `user profile ${id} has been updated`)
-              } else {
-                res.send({
-                  success: false,
-                  message: 'Failed to update data'
-                })
-              }
-            })
-          }
-        } else {
-          res.send({
-            success: false,
-            message: `There is no item with id ${id}`
-          })
-        }
-      })
-    } else {
-      res.send({
-        success: false,
-        message: 'At least one column is filled'
-      })
     }
   }
 }

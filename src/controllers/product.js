@@ -1,37 +1,74 @@
 const qs = require('querystring')
-
-const { createItemModel, createItemModel1, getDetailItemModel, getItemModel, getItemModel1, updateItemModel, updateItemModel1, updatePartialItemModel, deleteItemModel, deleteItemModel1 } = require('../models/product')
+const responseStandard = require('../helpers/response')
+const { createItemModel, validateCat, validateCond, postPictModel, getDetailItemModel, getItemModel, getItemModel1, updateItemModel, updateItemModel1, updatePartialItemModel, deleteItemModel, deleteItemModel1 } = require('../models/product')
+require('dotenv/config')
 
 module.exports = {
   createItem: (req, res) => {
-    const { name, price, description, category, picture = `uploads/${req.file.filename}` } = req.body
-    if (name && price && description && category) {
-      createItemModel1([category], result => {
-        const id = result[0].id
-        if (category == id) {
-          createItemModel([name, price, description, category, picture], result => {
-            res.status(201).send({
-              success: true,
-              message: 'Item has been created',
-              data: {
-                id: res.insertId,
-                ...req.body,
-                picture
-              }
-            })
+    const role = req.user.role
+    if (role === 2 || role === 1) {
+      let { name, price, quantity, condition, description, category } = req.body
+      category = parseInt(category)
+      condition = parseInt(condition)
+      if (name && price && quantity && condition && description && category) {
+        validateCat([category], result => {
+          const idcat = result[0].id
+          console.log(idcat)
+          validateCond([condition], result => {
+            const idcond = result[0].id
+            console.log(idcond)
+            if (category === idcat && condition === idcond) {
+              createItemModel([name, price, quantity, condition, description, category], result => {
+                if (result) {
+                  res.status(201).send({
+                    success: true,
+                    message: 'Item has been created',
+                    data: {
+                      id: res.insertId,
+                      ...req.body
+                    }
+                  })
+                } else {
+                  res.status(201).send({
+                    success: false,
+                    message: 'Failed to create item'
+                  })
+                }
+              })
+            } else {
+              res.send({
+                succes: false,
+                message: 'Category or condition is not listed'
+              })
+            }
           })
+        })
+      } else {
+        res.status(400).send({
+          success: false,
+          message: 'All field must be filled!'
+        })
+      }
+    } else {
+      responseStandard(res, 'You not a Seller')
+    }
+  },
+  postPict: (req, res) => {
+    const id = req.user.id
+    const role = req.user.role
+    if (role === 2 && role === 1) {
+      const { product, picture = `uploads/${id}-${req.file.filename}` } = req.body
+      console.log(picture)
+      console.log(product)
+      postPictModel([product, picture], result => {
+        if (result) {
+          responseStandard(res, 'picture has been uploaded', { picture, ...req.body })
         } else {
-          res.send({
-            succes: false,
-            message: 'Category is not listed'
-          })
+          responseStandard(res, 'Failed to upload picture', {}, 401, false)
         }
       })
     } else {
-      res.status(400).send({
-        success: false,
-        message: 'All field must be filled!'
-      })
+      responseStandard(res, 'You not a Seller')
     }
   },
   getItem: (req, res) => {
@@ -44,8 +81,8 @@ module.exports = {
       sortKey = Object.keys(sort)[0]
       sortValue = Object.values(sort)[0]
     } else {
-      sortKey = 'id'
-      sortValue = 'asc'
+      sortKey = 'created_at'
+      sortValue = 'desc'
     }
     if (typeof search === 'object') {
       searchKey = Object.keys(search)[0]
@@ -55,7 +92,7 @@ module.exports = {
       searchValue = search || ''
     }
     if (!limit) {
-      limit = 5
+      limit = 15
     } else {
       limit = parseInt(limit)
     }
@@ -78,7 +115,7 @@ module.exports = {
           getItemModel1([searchKey, searchValue], data => {
             const { count } = data[0]
             pageInfo.count = count
-            pageInfo.pages = Math.round(count / limit)
+            pageInfo.pages = Math.ceil(count / limit)
 
             const { pages, currentPage } = pageInfo
             if (currentPage < pages) {
