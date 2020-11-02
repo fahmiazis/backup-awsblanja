@@ -109,12 +109,12 @@ module.exports = {
           password: hashedPassword
         }
         usersModel.createSeller([roleId, send.email, send.password], (result) => {
-          if (result.affectedRows) {
+          if (result.affectedRows || result.length) {
             const id = result.insertId
-            usersModel.createDetailUsers([results.email, results.name, id], (data) => {
-              if (data.affectedRows) {
-                data = {
-                  id: data.insertId,
+            usersModel.createDetailUsers([results.email, results.name, id], (result) => {
+              if (result.affectedRows) {
+                const data = {
+                  id: result.insertId,
                   name: results.name,
                   email: results.email
                 }
