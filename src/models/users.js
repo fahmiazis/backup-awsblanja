@@ -57,7 +57,7 @@ module.exports = {
     })
   },
   createDetailUsers: (arr, cb) => {
-    db.query(`INSERT INTO user_details (name, phone, user_id, email) VALUES ('${arr[0]}', ${arr[1]}, ${arr[2]}, '${arr[3]}')`, (_err, results, _fields) => {
+    db.query(`INSERT INTO user_details (email, name, user_id) VALUES ('${arr[0]}', '${arr[1]}', ${arr[2]})`, (_err, results, _fields) => {
       cb(results)
     })
   },

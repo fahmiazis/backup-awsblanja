@@ -110,11 +110,8 @@ module.exports = {
         }
         usersModel.createSeller([roleId, send.email, send.password], (result) => {
           if (result.affectedRows) {
-            result = {
-              id: result.insertId,
-              ...results
-            }
-            usersModel.createDetailUsers([results.name, 0, result.id, results.email], (data) => {
+            const id = result.insertId
+            usersModel.createDetailUsers([results.email, results.name, id], (data) => {
               if (data.affectedRows) {
                 data = {
                   id: data.insertId,
