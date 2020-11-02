@@ -114,5 +114,15 @@ module.exports = {
     db.query(`SELECT addr_name, recipient, address, city, telephone, postal_code, status FROM user_address WHERE user_id=${id}`, (_err, result, _field) => {
       cb(result)
     })
+  },
+  deleteCart: (id, cb) => {
+    db.query(`DELETE FROM user_details WHERE user_id=${id}`, (_err, result, _field) => {
+      cb(result)
+    })
+  },
+  createTransaction: (arr, cb) => {
+    db.query(`INSERT INTO transaction (item, amount, delivery, summary, user_id) VALUES (${arr[0]}, ${arr[1]}, ${arr[2]}, ${arr[3]}, ${arr[4]})`, (_err, result, _field) => {
+      cb(result)
+    })
   }
 }
