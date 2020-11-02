@@ -92,23 +92,23 @@ module.exports = {
       password: joi.string().required()
     })
 
-    let { value: results, error } = schema.validate(req.body)
+    const { value: results, error } = schema.validate(req.body)
     if (error) {
       return responseStandard(res, 'Error', { error: error.message }, 401, false)
     } else {
       const roleId = 3
       const { email } = results
       const isExist = await usersModel.getUserByCondition({ email })
-      if (isExist.length > 0) {
+      if (isExist.length) {
         return responseStandard(res, 'Email already used', {}, 401, false)
       } else {
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(results.password, salt)
-        results = {
-          ...results,
+        const send = {
+          email: results.email,
           password: hashedPassword
         }
-        usersModel.createSeller([roleId, results.email, results.password], (result) => {
+        usersModel.createSeller([roleId, send.email, send.password], (result) => {
           if (result.affectedRows) {
             result = {
               id: result.insertId,
