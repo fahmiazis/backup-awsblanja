@@ -56,7 +56,7 @@ module.exports = {
   postPict: (req, res) => {
     const id = req.user.id
     const role = req.user.role
-    if (role === 2 && role === 1) {
+    if (role === 2 || role === 1) {
       const { product, picture = `uploads/${id}-${req.file.filename}` } = req.body
       console.log(picture)
       console.log(product)
@@ -68,7 +68,7 @@ module.exports = {
         }
       })
     } else {
-      responseStandard(res, 'You not a Seller')
+      responseStandard(res, 'You not a Seller', {}, 400, false)
     }
   },
   getItem: (req, res) => {
