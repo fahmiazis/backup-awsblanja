@@ -1,5 +1,6 @@
 const { Router } = require('express')
 const { getProfile, updateProfile, getCheckout, updateImage, getAddress } = require('../controllers/profile')
+const { buy, getHistoryTransaction } = require('../controllers/transaction')
 const uploadHelper = require('../helpers/upload')
 const router = Router()
 
@@ -9,6 +10,7 @@ router.patch('/customer', updateProfile)
 router.patch('/customer/img', uploadHelper, updateImage)
 router.get('/checkout', getCheckout)
 router.get('/address', getAddress)
-router.get('/buy')
+router.post('/buy', buy)
+router.get('/history', getHistoryTransaction)
 
 module.exports = router

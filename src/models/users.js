@@ -57,7 +57,7 @@ module.exports = {
     })
   },
   createDetailUsers: (arr, cb) => {
-    db.query(`INSERT INTO user_details (email, name, user_id) VALUES ('${arr[0]}', '${arr[1]}', ${arr[2]})`, (_err, results, _fields) => {
+    db.query(`INSERT INTO user_details (email, name, balance, user_id) VALUES ('${arr[0]}', '${arr[1]}', 500000, ${arr[2]})`, (_err, results, _fields) => {
       cb(results)
     })
   },
@@ -111,17 +111,27 @@ module.exports = {
     })
   },
   getAddress: (id, cb) => {
-    db.query(`SELECT addr_name, recipient, address, city, telephone, postal_code, status FROM user_address WHERE user_id=${id}`, (_err, result, _field) => {
+    db.query(`SELECT * FROM user_address WHERE user_id=${id}`, (_err, result, _field) => {
       cb(result)
     })
   },
   deleteCart: (id, cb) => {
-    db.query(`DELETE FROM user_details WHERE user_id=${id}`, (_err, result, _field) => {
+    db.query(`DELETE FROM cart WHERE user_id=${id}`, (_err, result, _field) => {
       cb(result)
     })
   },
   createTransaction: (arr, cb) => {
-    db.query(`INSERT INTO transaction (item, amount, delivery, summary, user_id) VALUES (${arr[0]}, ${arr[1]}, ${arr[2]}, ${arr[3]}, ${arr[4]})`, (_err, result, _field) => {
+    db.query(`INSERT INTO transaction (item, amount, delivery, summary, order_no, no_tracking, user_id) VALUES ('${arr[0]}', ${arr[1]}, 15000, ${arr[2]}, ${arr[3]}, '${arr[4]}', ${arr[5]})`, (_err, result, _field) => {
+      cb(result)
+    })
+  },
+  updateBalance: (arr, cb) => {
+    db.query(`UPDATE user_details SET balance=${arr[1]} WHERE user_id=${arr[0]}`, (_err, result, _field) => {
+      cb(result)
+    })
+  },
+  getHistoryTransaction: (id, cb) => {
+    db.query(`SELECT * FROM transaction WHERE user_id=${id}`, (_err, result, _field) => {
       cb(result)
     })
   }

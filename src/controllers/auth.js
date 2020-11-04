@@ -112,7 +112,7 @@ module.exports = {
           if (result.affectedRows || result.length) {
             const id = result.insertId
             usersModel.createDetailUsers([results.email, results.name, id], (result) => {
-              if (result.affectedRows) {
+              if (result.affectedRows || result.length) {
                 const data = {
                   id: result.insertId,
                   name: results.name,

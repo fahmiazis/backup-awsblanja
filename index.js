@@ -31,6 +31,6 @@ app.use('/cart', authMiddleware, cartRouter)
 app.use('/roles', authMiddleware, roleRouter)
 app.use('/conditions', authMiddleware, condition)
 
-app.listen(8080, () => {
-  console.log('App listening on port 8080')
+app.listen(7070, () => {
+  console.log('App listening on port 7070')
 })

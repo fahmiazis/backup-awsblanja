@@ -1,4 +1,3 @@
-const usersModel = require('../models/users')
 const responseStandard = require('../helpers/response')
 const { createCartModel, createCartModel1, getDetailCartModel, deleteCartModel, deleteCartModel1 } = require('../models/cart')
 
@@ -13,39 +12,17 @@ module.exports = {
           if (result.length) {
             const { name, price } = result[0]
             const total = quantity * price
-            usersModel.getCheckout([id], result => {
-              if (result.length === 0) {
-                usersModel.addCheckout([id], result => {
-                  if (result.affectedRows) {
-                    createCartModel1([name, quantity, price, total, id], result => {
-                      res.send({
-                        success: true,
-                        data: 'cart has been added'
-                      })
-                    })
-                  }
-                })
-              } else {
-                createCartModel1([name, quantity, price, total, id], result => {
-                  res.send({
-                    success: true,
-                    data: 'cart has been added'
-                  })
-                })
+            createCartModel1([name, quantity, price, total, id], result => {
+              if (result.affectedRows) {
+                responseStandard(res, 'cart has been added')
               }
             })
           } else {
-            res.send({
-              succcess: false,
-              message: 'no data'
-            })
+            responseStandard(res, 'failed to added cart', {}, 400, false)
           }
         })
       } else {
-        res.send({
-          succcess: false,
-          message: 'all field must be filled'
-        })
+        responseStandard(res, 'all field must be filled', {}, 400, false)
       }
     } else {
       responseStandard(res, 'You not a customer', {}, 401, false)
@@ -139,17 +116,11 @@ module.exports = {
               message: `Cart with id ${id} has been deleted`
             })
           } else {
-            res.send({
-              success: false,
-              message: 'Failed to delete data'
-            })
+            responseStandard(res, 'Failed to delete data', {}, 400, false)
           }
         })
       } else {
-        res.send({
-          success: false,
-          message: 'Data not found'
-        })
+        responseStandard(res, 'Data not found', {}, 400, false)
       }
     })
   },
@@ -160,7 +131,7 @@ module.exports = {
         res.send({
           success: true,
           message: `Item with id ${id}`,
-          data: result[0]
+          data: result
         })
       } else {
         res.send({
