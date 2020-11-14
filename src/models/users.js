@@ -84,10 +84,15 @@ module.exports = {
   updateEmail: (arr, cb) => {
     db.query(`UPDATE ${table} SET email='${arr[1]}' where id=${arr[0]}`)
   },
-  updatePartialProfile: (arr, cb) => {
-    const query = `UPDATE user_details SET ${arr[1]} WHERE user_id=${arr[0]}`
-    db.query(query, (_err, result, _fields) => {
-      cb(result)
+  updatePartialProfile: (arr, id) => {
+    return new Promise((resolve, reject) => {
+      db.query('UPDATE user_details SET ? WHERE user_id = ?', [arr, id], (_err, result, _fields) => {
+        if (_err) {
+          reject(_err)
+        } else {
+          resolve(result)
+        }
+      })
     })
   },
   addAddress: (arr, cb) => {

@@ -21,7 +21,6 @@ module.exports = {
   },
   updateProfileVii: (req, res) => {
     const id = req.user.id
-
     const schema = joi.object({
       name: joi.string(),
       email: joi.string(),
@@ -34,13 +33,12 @@ module.exports = {
     if (error) {
       return responseStandard(res, 'Error', { error: error.message }, 401, false)
     } else {
-      usersModel.updatePartialProfile([id, results.name], result => {
-        if (result.affectedRows) {
-          responseStandard(res, `user profile ${id} has been updated`)
-        } else {
-          responseStandard(res, 'Failed to update profile', {}, 401, false)
-        }
-      })
+      const result = usersModel.updatePartialProfile(results, id)
+      if (result) {
+        responseStandard(res, `user profile ${id} has been updated`)
+      } else {
+        responseStandard(res, 'Failed to update profile', {}, 401, false)
+      }
     }
   },
   updateProfile: (req, res) => {
