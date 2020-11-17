@@ -3,7 +3,7 @@ const table = 'products'
 
 module.exports = {
   getDetailItemModel: (id, cb) => {
-    db.query(`SELECT * FROM ${table} WHERE id=${id}`, (_err, result, _field) => {
+    db.query(`SELECT products.id, products.name, products.price, products.description, products.created_at, product_images.url FROM ${table} INNER JOIN product_images ON products.id=product_images.product_id WHERE products.id=${id}`, (_err, result, _field) => {
       cb(result)
     })
   },

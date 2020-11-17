@@ -88,7 +88,7 @@ module.exports = {
   updateImage: (req, res) => {
     const id = req.user.id
     const role = req.user.role
-    if (role === 3) {
+    if (role === 3 || role === 2) {
       const picture = `uploads/${req.file.filename}`
       usersModel.postPictModel([id, picture], result => {
         if (result) {

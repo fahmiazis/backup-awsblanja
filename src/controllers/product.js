@@ -92,7 +92,7 @@ module.exports = {
       searchValue = search || ''
     }
     if (!limit) {
-      limit = 15
+      limit = 5
     } else {
       limit = parseInt(limit)
     }
@@ -119,10 +119,10 @@ module.exports = {
 
             const { pages, currentPage } = pageInfo
             if (currentPage < pages) {
-              pageInfo.nextLink = `http://localhost:8080/product?${qs.stringify({ ...req.query, ...{ page: page + 1 } })}`
+              pageInfo.nextLink = `http://54.147.40.208:7070/home/new?${qs.stringify({ ...req.query, ...{ page: page + 1 } })}`
             }
             if (currentPage > 1) {
-              pageInfo.prevLink = `http://localhost:8080/product?${qs.stringify({ ...req.query, ...{ page: page - 1 } })}`
+              pageInfo.prevLink = `http://54.147.40.208:7070/home/new?${qs.stringify({ ...req.query, ...{ page: page - 1 } })}`
             }
             res.send({
               success: true,

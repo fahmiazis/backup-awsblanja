@@ -7,13 +7,18 @@ module.exports = {
       cb(result)
     })
   },
+  getPicture: (id, cb) => {
+    db.query(`SELECT url FROM product_images WHERE product_id=${id}`, (_err, result, _field) => {
+      cb(result)
+    })
+  },
   createCartModel: (arr, cb) => {
     db.query(`SELECT * FROM products WHERE id=${arr[0]}`, (_err, result, _fields) => {
       cb(result)
     })
   },
   createCartModel1: (arr, cb) => {
-    db.query(`INSERT INTO ${table} (product, quantity, price, total_price, user_id) VALUES ('${arr[0]}', ${arr[1]}, ${arr[2]}, ${arr[3]}, ${arr[4]})`, (_err, result, _fields) => {
+    db.query(`INSERT INTO ${table} (product, quantity, price, total_price, user_id, product_id) VALUES ('${arr[0]}', ${arr[1]}, ${arr[2]}, ${arr[3]}, ${arr[4]}, ${arr[5]})`, (_err, result, _fields) => {
       cb(result)
     })
   },

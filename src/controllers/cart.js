@@ -1,5 +1,5 @@
 const responseStandard = require('../helpers/response')
-const { createCartModel, createCartModel1, getDetailCartModel, deleteCartModel, deleteCartModel1 } = require('../models/cart')
+const { createCartModel, createCartModel1, getPicture, getDetailCartModel, deleteCartModel, deleteCartModel1 } = require('../models/cart')
 
 module.exports = {
   createCart: (req, res) => {
@@ -12,7 +12,7 @@ module.exports = {
           if (result.length) {
             const { name, price } = result[0]
             const total = quantity * price
-            createCartModel1([name, quantity, price, total, id], result => {
+            createCartModel1([name, quantity, price, total, id, product], result => {
               if (result.affectedRows) {
                 responseStandard(res, 'cart has been added')
               }
@@ -128,16 +128,15 @@ module.exports = {
     const id = req.user.id
     getDetailCartModel(id, result => {
       if (result.length) {
-        res.send({
-          success: true,
-          message: `Item with id ${id}`,
-          data: result
-        })
+        const product = result.product_id
+	getPicture(product, data => {
+	if (data.length) {
+	  const url = data
+	  responseStandard(res, 'Success get cart', {data: {result, url}}) 
+	}
+	})
       } else {
-        res.send({
-          success: false,
-          message: 'Data not found'
-        })
+        responseStandard(res, 'Data not found', {}, 400, false)
       }
     })
   }
