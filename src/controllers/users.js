@@ -57,21 +57,35 @@ module.exports = {
         recipient: joi.string().required(),
         address: joi.string().required(),
         city: joi.string().required(),
-        telephone: joi.string().required(),
+        telephone: joi.string(),
         postal_code: joi.string().required(),
-        status: joi.string().required()
+        status: joi.string()
       })
       const { value: results, error } = schema.validate(req.body)
       if (error) {
         return responseStandard(res, 'Error', { error: error.message }, 401, false)
       } else {
-        usersModel.addAddress([results.addr_name, results.recipient, results.address, results.city, results.telephone, results.postal_code, results.status, id], (result) => {
+	usersModel.getPriAddress(id, data => {
+	if (data.length) {
+	const status = 'secondary'
+	const telephone = '0'
+	usersModel.addAddress([results.addr_name, results.recipient, results.address, resulst.city, telephone, results.postal_code, status, id], (result) => {
+	if(result.affectedRows){
+	  responseStandard(res, 'create address success', {results})
+	}
+	  })
+	} else {
+	const phone = '0'
+	const statuspri = 'primary'
+        usersModel.addAddress([results.addr_name, results.recipient, results.address, results.city, phone, results.postal_code, statuspri, id], (result) => {
           if (result.affectedRows) {
             responseStandard(res, 'Create Address success', { results })
           } else {
-            responseStandard(res, 'Failed to create user', {}, 401, false)
+            responseStandard(res, 'Failed to create address', {}, 401, false)
           }
         })
+	}
+	})
       }
     } else {
       responseStandard(res, 'You not a customer', {}, 401, false)

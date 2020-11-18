@@ -29,7 +29,7 @@ module.exports = {
         usersModel.getDetailProfile(id, result => {
           if (result.length) {
             const balance = result[0].balance
-            const count = balance - (summary + 15000)
+            const count = balance - (summary + 30000)
             if (count >= 0) {
               usersModel.updateBalance([id, count], result => {
                 if (result.affectedRows) {

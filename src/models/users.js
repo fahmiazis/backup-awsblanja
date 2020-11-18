@@ -120,13 +120,18 @@ module.exports = {
       cb(result)
     })
   },
+  getPriAddress: (id, cb) => {
+    db.query(`SELECT * FROM user_address WHERE user_id=${id} AND status='primary'`, (_err, result, _field) => {
+      cb(result)
+    })
+  },
   deleteCart: (id, cb) => {
     db.query(`DELETE FROM cart WHERE user_id=${id}`, (_err, result, _field) => {
       cb(result)
     })
   },
   createTransaction: (arr, cb) => {
-    db.query(`INSERT INTO transaction (item, amount, delivery, summary, order_no, no_tracking, user_id) VALUES ('${arr[0]}', ${arr[1]}, 15000, ${arr[2]}, ${arr[3]}, '${arr[4]}', ${arr[5]})`, (_err, result, _field) => {
+    db.query(`INSERT INTO transaction (item, amount, delivery, summary, order_no, no_tracking, user_id) VALUES ('${arr[0]}', ${arr[1]}, 30000, ${arr[2]}, ${arr[3]}, '${arr[4]}', ${arr[5]})`, (_err, result, _field) => {
       cb(result)
     })
   },
