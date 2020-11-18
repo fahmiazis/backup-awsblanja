@@ -1,4 +1,5 @@
 const usersModel = require('../models/users')
+const { getDetailCartModel } = require('../models/cart')
 const responseStandard = require('../helpers/response')
 const joi = require('joi')
 
@@ -105,15 +106,17 @@ module.exports = {
     const id = req.user.id
     const role = req.user.role
     if (role === 3) {
-      usersModel.getCart(id, data1 => {
-        if (data1.length) {
+      getDetailCartModel(id, data1 => {
+        if (data1) {
           const sum = data1.map(item => {
             return item.total_price
           })
-          const summary = sum.reduce((total, value) => total + value, 0)
+          const order = sum.reduce((total, value) => total + value, 0)
+	  const delivery = 30000
+	  const summary = order + delivery
           usersModel.getAddress(id, data2 => {
-            if (data2.length) {
-              responseStandard(res, 'This is your item', { product: data1, address: data2, summary: summary })
+            if (data2) {
+              responseStandard(res, 'This is your item', { product: data1, address: data2, summary: summary, order: order, delivery: delivery })
             } else {
               responseStandard(res, 'fail to show your checkuot page', {}, 401, false)
             }

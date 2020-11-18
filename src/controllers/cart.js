@@ -1,5 +1,5 @@
 const responseStandard = require('../helpers/response')
-const { createCartModel, createCartModel1, getPicture, getDetailCartModel, deleteCartModel, deleteCartModel1 } = require('../models/cart')
+const { createCartModel, createCartModel1, getDetailCartModel, deleteCartModel, deleteCartModel1 } = require('../models/cart')
 
 module.exports = {
   createCart: (req, res) => {
@@ -128,13 +128,7 @@ module.exports = {
     const id = req.user.id
     getDetailCartModel(id, result => {
       if (result.length) {
-        const product = result.product_id
-	getPicture(product, data => {
-	if (data.length) {
-	  const url = data
-	  responseStandard(res, 'Success get cart', {data: {result, url}}) 
-	}
-	})
+	  responseStandard(res, 'Success get cart', {data: result})
       } else {
         responseStandard(res, 'Data not found', {}, 400, false)
       }

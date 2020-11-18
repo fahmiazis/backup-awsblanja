@@ -3,12 +3,7 @@ const table = 'cart'
 
 module.exports = {
   getDetailCartModel: (id, cb) => {
-    db.query(`SELECT * FROM ${table} WHERE user_id=${id}`, (_err, result, _field) => {
-      cb(result)
-    })
-  },
-  getPicture: (id, cb) => {
-    db.query(`SELECT url FROM product_images WHERE product_id=${id}`, (_err, result, _field) => {
+    db.query(`SELECT cart.id, cart.product, cart.quantity, cart.price, cart.total_price, cart.user_id, cart.product_id, product_images.url FROM ${table} INNER JOIN product_images ON cart.product_id=product_images.product_id WHERE user_id=${id} ORDER BY id desc`, (_err, result, _field) => {
       cb(result)
     })
   },
