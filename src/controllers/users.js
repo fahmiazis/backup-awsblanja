@@ -69,7 +69,7 @@ module.exports = {
 	if (data.length) {
 	const status = 'secondary'
 	const telephone = '0'
-	usersModel.addAddress([results.addr_name, results.recipient, results.address, resulst.city, telephone, results.postal_code, status, id], (result) => {
+	usersModel.addAddress([results.addr_name, results.recipient, results.address, results.city, telephone, results.postal_code, status, id], (result) => {
 	if(result.affectedRows){
 	  responseStandard(res, 'create address success', {results})
 	}
