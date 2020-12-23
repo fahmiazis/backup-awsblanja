@@ -133,9 +133,9 @@ module.exports = {
     const id = req.user.id
     usersModel.getAddress(id, result => {
       if (result.length) {
-        responseStandard(res, 'This is your item', { data: result })
+        responseStandard(res, 'your address', { data: result })
       } else {
-        responseStandard(res, 'fail to show your checkuot page', {}, 401, false)
+        responseStandard(res, 'fail to get address', {}, 401, false)
       }
     })
   }

@@ -192,5 +192,14 @@ module.exports = {
     } else {
       responseStandard(res, 'Failed delete address', {}, 401, false)
     }
+  },
+  getPriAddress: async (req, res) => {
+    const idUser = req.user.id
+    const result = await usersModel.getPriAddressByUser(idUser)
+    if (result.length) {
+      responseStandard(res, 'your primary address', { data: result })
+    } else {
+      responseStandard(res, 'fail to get address', {}, 401, false)
+    }
   }
 }
