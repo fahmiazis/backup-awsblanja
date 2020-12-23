@@ -100,6 +100,17 @@ module.exports = {
       cb(result)
     })
   },
+  editAddress: (arr, id) => {
+    return new Promise((resolve, reject) => {
+      db.query(`UPDATE user_address SET ? WHERE id = ${id}`, arr, (_err, result, _fields) => {
+        if (_err) {
+          reject(_err)
+        } else {
+          resolve(result)
+        }
+      })
+    })
+  },
   addCheckout: (arr, cb) => {
     db.query(`INSERT INTO checkout (user_id) VALUES (${arr[0]})`, (_err, result, _field) => {
       cb(result)
@@ -116,13 +127,57 @@ module.exports = {
     })
   },
   getAddress: (id, cb) => {
-    db.query(`SELECT * FROM user_address WHERE user_id=${id}`, (_err, result, _field) => {
+    db.query(`SELECT * FROM user_address WHERE user_id=${id} ORDER BY status asc`, (_err, result, _field) => {
       cb(result)
+    })
+  },
+  getAddressByUser: (id) => {
+    return new Promise((resolve, reject) => {
+      db.query(`SELECT * FROM user_address WHERE user_id=${id} ORDER BY id asc`, (_err, result, _field) => {
+        if (_err) {
+          reject(_err)
+        } else {
+          resolve(result)
+        }
+      })
     })
   },
   getPriAddress: (id, cb) => {
     db.query(`SELECT * FROM user_address WHERE user_id=${id} AND status='primary'`, (_err, result, _field) => {
       cb(result)
+    })
+  },
+  getPriAddressByUser: (id) => {
+    return new Promise((resolve, reject) => {
+      db.query(`SELECT * FROM user_address WHERE user_id=${id} AND status='primary'`, (_err, result, _field) => {
+        if (_err) {
+          reject(_err)
+        } else {
+          resolve(result)
+        }
+      })
+    })
+  },
+  getPriAddressById: (id) => {
+    return new Promise((resolve, reject) => {
+      db.query(`SELECT * FROM user_address WHERE id=${id} AND status='primary'`, (_err, result, _field) => {
+        if (_err) {
+          reject(_err)
+        } else {
+          resolve(result)
+        }
+      })
+    })
+  },
+  deleteAddress: (id) => {
+    return new Promise((resolve, reject) => {
+      db.query(`DELETE FROM user_address WHERE id=${id}`, (_err, result, _field) => {
+        if (_err) {
+          reject(_err)
+        } else {
+          resolve(result)
+        }
+      })
     })
   },
   deleteCart: (id, cb) => {

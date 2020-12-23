@@ -20,7 +20,7 @@ module.exports = {
       }
     })
   },
-  updateProfileVii: (req, res) => {
+  updateProfileVii: async (req, res) => {
     const id = req.user.id
     const schema = joi.object({
       name: joi.string(),
@@ -34,7 +34,7 @@ module.exports = {
     if (error) {
       return responseStandard(res, 'Error', { error: error.message }, 401, false)
     } else {
-      const result = usersModel.updatePartialProfile(results, id)
+      const result = await usersModel.updatePartialProfile(results, id)
       if (result) {
         responseStandard(res, `user profile ${id} has been updated`)
       } else {
@@ -112,8 +112,8 @@ module.exports = {
             return item.total_price
           })
           const order = sum.reduce((total, value) => total + value, 0)
-	  const delivery = 30000
-	  const summary = order + delivery
+          const delivery = 30000
+          const summary = order + delivery
           usersModel.getPriAddress(id, data2 => {
             if (data2.length) {
               responseStandard(res, 'This is your item', { product: data1, address: data2, summary: summary, order: order, delivery: delivery })
@@ -124,7 +124,7 @@ module.exports = {
         } else {
           responseStandard(res, 'fail to show your checkuot page', {}, 401, false)
         }
-	})
+      })
     } else {
       responseStandard(res, 'You not a customer', {}, 500, false)
     }

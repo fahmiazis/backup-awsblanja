@@ -7,6 +7,28 @@ module.exports = {
       cb(result)
     })
   },
+  getDetailCartModelById: (id) => {
+    return new Promise((resolve, reject) => {
+      db.query(`SELECT * FROM ${table} WHERE id=${id}`, (_err, result, _field) => {
+        if (_err) {
+          reject(_err)
+        } else {
+          resolve(result)
+        }
+      })
+    })
+  },
+  getDetailCartModelByProduct: (id, product) => {
+    return new Promise((resolve, reject) => {
+      db.query(`SELECT * FROM ${table} WHERE user_id=${id} AND product_id=${product}`, (_err, result, _field) => {
+        if (_err) {
+          reject(_err)
+        } else {
+          resolve(result)
+        }
+      })
+    })
+  },
   createCartModel: (arr, cb) => {
     db.query(`SELECT * FROM products WHERE id=${arr[0]}`, (_err, result, _fields) => {
       cb(result)
@@ -39,6 +61,17 @@ module.exports = {
     const query = `DELETE FROM ${table} WHERE id=${id}`
     db.query(query, (_err, result, _fields) => {
       cb(result)
+    })
+  },
+  update: (data, id) => {
+    return new Promise((resolve, reject) => {
+      db.query(`UPDATE ${table} SET ? WHERE id = ?`, [data, id], (_err, result, _field) => {
+        if (_err) {
+          reject(_err)
+        } else {
+          resolve(result)
+        }
+      })
     })
   }
 }

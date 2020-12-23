@@ -1,26 +1,31 @@
 const responseStandard = require('../helpers/response')
-const { createCartModel, createCartModel1, getDetailCartModel, deleteCartModel, deleteCartModel1 } = require('../models/cart')
+const { createCartModel, createCartModel1, getDetailCartModel, deleteCartModel, deleteCartModel1, update, getDetailCartModelById, getDetailCartModelByProduct } = require('../models/cart')
 
 module.exports = {
-  createCart: (req, res) => {
+  createCart: async (req, res) => {
     const { product, quantity } = req.body
     const id = req.user.id
     const role = req.user.role
     if (role === 3) {
       if (product && quantity) {
-        createCartModel([product], result => {
-          if (result.length) {
-            const { name, price } = result[0]
-            const total = quantity * price
-            createCartModel1([name, quantity, price, total, id, product], result => {
-              if (result.affectedRows) {
-                responseStandard(res, 'cart has been added')
-              }
-            })
-          } else {
-            responseStandard(res, 'failed to added cart', {}, 400, false)
-          }
-        })
+        const findCart = await getDetailCartModelByProduct(id, product)
+        if (findCart.length) {
+          return responseStandard(res, 'cart has been added')
+        } else {
+          createCartModel([product], result => {
+            if (result.length) {
+              const { name, price } = result[0]
+              const total = quantity * price
+              createCartModel1([name, quantity, price, total, id, product], result => {
+                if (result.affectedRows) {
+                  responseStandard(res, 'cart has been added')
+                }
+              })
+            } else {
+              responseStandard(res, 'failed to added cart', {}, 400, false)
+            }
+          })
+        }
       } else {
         responseStandard(res, 'all field must be filled', {}, 400, false)
       }
@@ -128,10 +133,48 @@ module.exports = {
     const id = req.user.id
     getDetailCartModel(id, result => {
       if (result.length) {
-	  responseStandard(res, 'Success get cart', {data: result})
+        responseStandard(res, 'Success get cart', { data: result })
       } else {
         responseStandard(res, 'Data not found', {}, 400, false)
       }
     })
+  },
+  updateCartIncrement: async (req, res) => {
+    const id = req.params.id
+    const result = await getDetailCartModelById(id)
+    console.log(result)
+    if (result.length) {
+      const quantity = result.map(item => {
+        return item.quantity + 1
+      })
+      console.log(quantity)
+      const count = result.map(item => {
+        return item.price * quantity
+      })
+      const data = await update({ quantity: quantity, total_price: count }, id)
+      if (data) {
+        responseStandard(res, 'Success update cart')
+      } else {
+        responseStandard(res, 'Failed update cart', {}, 400, false)
+      }
+    }
+  },
+  updateCartDecrement: async (req, res) => {
+    const id = req.params.id
+    const result = await getDetailCartModelById(id)
+    if (result.length) {
+      const quantity = result.map(item => {
+        return item.quantity - 1
+      })
+      const count = result.map(item => {
+        return item.price * quantity
+      })
+      const data = await update({ quantity: quantity, total_price: count }, id)
+      if (data) {
+        responseStandard(res, 'Success update cart')
+      } else {
+        responseStandard(res, 'Failed update cart', {}, 400, false)
+      }
+    }
   }
 }
