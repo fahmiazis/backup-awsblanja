@@ -37,21 +37,13 @@ module.exports = {
                   const tracking = 'TR' + trackingNumber() + id.toString()
                   usersModel.createTransaction([product, totalItem, summary, orderNo, tracking, id], result => {
                     if (result.affectedRows) {
-                      const idProduct = resultCart.map(item => {
-                        return item
-                      })
-                      for (let i = 0; i < idProduct.length; i++) {
-                        const goOrder = usersModel.createNewOrderDetail({ order_id: result.insertId, user_id: idProduct[i].user_id, product_id: idProduct[i].product_id, quantity: idProduct[i].quantity, price: idProduct[i].price, total_price: idProduct[i].total_price })
-                        if (i === (idProduct.length - 1) && goOrder.length) {
-                          usersModel.deleteCart(id, result => {
-                            if (result.affectedRows) {
-                              responseStandard(res, 'purchase was succesful')
-                            } else {
-                              responseStandard(res, 'transaction failed', {}, 400, false)
-                            }
-                          })
+                      usersModel.deleteCart(id, result => {
+                        if (result.affectedRows) {
+                          responseStandard(res, 'purchase was succesful')
+                        } else {
+                          responseStandard(res, 'transaction failed', {}, 400, false)
                         }
-                      }
+                      })
                     } else {
                       responseStandard(res, 'transaction failed', {}, 400, false)
                     }
