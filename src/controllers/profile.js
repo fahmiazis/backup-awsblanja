@@ -133,7 +133,13 @@ module.exports = {
     const id = req.user.id
     usersModel.getAddress(id, result => {
       if (result.length) {
-        responseStandard(res, 'your address', { data: result })
+        usersModel.getAddressCount(id, results => {
+          if (results.length) {
+            responseStandard(res, 'your address', { data: result, count: results[0].count })
+          } else {
+            responseStandard(res, 'fail to get address', {}, 401, false)
+          }
+        })
       } else {
         responseStandard(res, 'fail to get address', {}, 401, false)
       }

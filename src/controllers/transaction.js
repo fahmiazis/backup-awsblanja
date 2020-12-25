@@ -12,15 +12,15 @@ function trackingNumber () {
 module.exports = {
   buy: (req, res) => {
     const id = req.user.id
-    usersModel.getCart(id, result => {
-      if (result.length) {
-        const sum = result.map(item => {
+    usersModel.getNewCart(id, resultCart => {
+      if (resultCart.length) {
+        const sum = resultCart.map(item => {
           return item.total_price
         })
-        const item = result.map(item => {
+        const item = resultCart.map(item => {
           return item.product
         })
-        const amount = result.map(item => {
+        const amount = resultCart.map(item => {
           return item.quantity
         })
         const product = item.toString()
@@ -37,13 +37,21 @@ module.exports = {
                   const tracking = 'TR' + trackingNumber() + id.toString()
                   usersModel.createTransaction([product, totalItem, summary, orderNo, tracking, id], result => {
                     if (result.affectedRows) {
-                      usersModel.deleteCart(id, result => {
-                        if (result.affectedRows) {
-                          responseStandard(res, 'purchase was succesful')
-                        } else {
-                          responseStandard(res, 'transaction failed', {}, 400, false)
-                        }
+                      const idProduct = resultCart.map(item => {
+                        return item
                       })
+                      for (let i = 0; i < idProduct.length; i++) {
+                        const goOrder = usersModel.createNewOrderDetail({ order_id: result.insertId, user_id: idProduct[i].user_id, product_id: idProduct[i].product_id, quantity: idProduct[i].quantity, price: idProduct[i].price, total_price: idProduct[i].total_price })
+                        if (i === (idProduct.length - 1) && goOrder.length) {
+                          usersModel.deleteCart(id, result => {
+                            if (result.affectedRows) {
+                              responseStandard(res, 'purchase was succesful')
+                            } else {
+                              responseStandard(res, 'transaction failed', {}, 400, false)
+                            }
+                          })
+                        }
+                      }
                     } else {
                       responseStandard(res, 'transaction failed', {}, 400, false)
                     }
@@ -64,7 +72,13 @@ module.exports = {
     const id = req.user.id
     usersModel.getHistoryTransaction(id, result => {
       if (result.length) {
-        responseStandard(res, 'your history transaction', { data: result })
+        usersModel.getHistoryCount(id, results => {
+          if (results.length) {
+            responseStandard(res, 'your history transaction', { data: result, count: results[0].count })
+          } else {
+            responseStandard(res, 'you haven\'t history transaction')
+          }
+        })
       } else {
         responseStandard(res, 'you haven\'t history transaction')
       }

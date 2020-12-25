@@ -126,8 +126,18 @@ module.exports = {
       cb(result)
     })
   },
+  getNewCart: (id, cb) => {
+    db.query(`SELECT * FROM cart WHERE user_id=${id}`, (_err, result, _field) => {
+      cb(result)
+    })
+  },
   getAddress: (id, cb) => {
     db.query(`SELECT * FROM user_address WHERE user_id=${id} ORDER BY status asc`, (_err, result, _field) => {
+      cb(result)
+    })
+  },
+  getAddressCount: (id, cb) => {
+    db.query(`SELECT COUNT(*) AS count FROM user_address WHERE user_id=${id} ORDER BY status asc`, (_err, result, _field) => {
       cb(result)
     })
   },
@@ -198,6 +208,27 @@ module.exports = {
   getHistoryTransaction: (id, cb) => {
     db.query(`SELECT * FROM transaction WHERE user_id=${id}`, (_err, result, _field) => {
       cb(result)
+    })
+  },
+  getHistoryCount: (id, cb) => {
+    db.query(`SELECT COUNT(*) AS count FROM transaction WHERE user_id=${id}`, (_err, result, _field) => {
+      cb(result)
+    })
+  },
+  createOrderDetail: (arr, cb) => {
+    db.query(`INSERT INTO order_details (order_id, user_id, product_id, quantity, price, total_price) VALUES ('${arr[0]}', ${arr[1]}, ${arr[2]}, ${arr[3]}, ${arr[4]}, ${arr[5]}, ${arr[6]})`, (_err, result, _fields) => {
+      cb(result)
+    })
+  },
+  createNewOrderDetail: (arr = {}) => {
+    return new Promise((resolve, reject) => {
+      db.query('INSERT INTO order_details SET ?', arr, (_err, result, _fields) => {
+        if (_err) {
+          reject(_err)
+        } else {
+          resolve(result)
+        }
+      })
     })
   }
 }
