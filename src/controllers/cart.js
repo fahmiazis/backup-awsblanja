@@ -1,5 +1,5 @@
 const responseStandard = require('../helpers/response')
-const { createCartModel, createCartModel1, getDetailCartModel, deleteCartModel, deleteCartModel1, update, getDetailCartModelById, getDetailCartModelByProduct } = require('../models/cart')
+const { createCartModel, updateOrder, deleteOrderDetail, createOrderDetails, createCartModel1, getDetailCartModel, deleteCartModel, deleteCartModel1, update, getDetailCartModelById, getDetailCartModelByProduct } = require('../models/cart')
 
 module.exports = {
   createCart: async (req, res) => {
@@ -18,7 +18,13 @@ module.exports = {
               const total = quantity * price
               createCartModel1([name, quantity, price, total, id, product], result => {
                 if (result.affectedRows) {
-                  responseStandard(res, 'cart has been added')
+                  createOrderDetails([id, product, quantity, price, total, name, result.insertId], result => {
+                    if (result.affectedRows) {
+                      responseStandard(res, 'cart has been added')
+                    } else {
+                      responseStandard(res, 'failed to added cart', {}, 400, false)
+                    }
+                  })
                 }
               })
             } else {
@@ -116,9 +122,12 @@ module.exports = {
       if (result.length) {
         deleteCartModel1(id, result => {
           if (result.affectedRows) {
-            res.send({
-              success: true,
-              message: `Cart with id ${id} has been deleted`
+            deleteOrderDetail(id, result => {
+              if (result.affectedRows) {
+                responseStandard(res, `Cart with id ${id} has been deleted`)
+              } else {
+                responseStandard(res, 'Failed to delete data', {}, 400, false)
+              }
             })
           } else {
             responseStandard(res, 'Failed to delete data', {}, 400, false)
@@ -142,18 +151,21 @@ module.exports = {
   updateCartIncrement: async (req, res) => {
     const id = req.params.id
     const result = await getDetailCartModelById(id)
-    console.log(result)
     if (result.length) {
       const quantity = result.map(item => {
         return item.quantity + 1
       })
-      console.log(quantity)
       const count = result.map(item => {
         return item.price * quantity
       })
       const data = await update({ quantity: quantity, total_price: count }, id)
       if (data) {
-        responseStandard(res, 'Success update cart')
+        const results = await updateOrder({ quantity: quantity, total_price: count }, id)
+        if (results) {
+          responseStandard(res, 'Success update cart')
+        } else {
+          responseStandard(res, 'Failed update cart', {}, 400, false)
+        }
       } else {
         responseStandard(res, 'Failed update cart', {}, 400, false)
       }
@@ -169,11 +181,32 @@ module.exports = {
       const count = result.map(item => {
         return item.price * quantity
       })
-      const data = await update({ quantity: quantity, total_price: count }, id)
-      if (data) {
-        responseStandard(res, 'Success update cart')
+      if (quantity <= 0) {
+        deleteCartModel1(id, result => {
+          if (result.affectedRows) {
+            deleteOrderDetail(id, result => {
+              if (result.affectedRows) {
+                responseStandard(res, `Cart with id ${id} has been deleted`)
+              } else {
+                responseStandard(res, 'Failed to delete data', {}, 400, false)
+              }
+            })
+          } else {
+            responseStandard(res, 'Failed to delete data', {}, 400, false)
+          }
+        })
       } else {
-        responseStandard(res, 'Failed update cart', {}, 400, false)
+        const data = await update({ quantity: quantity, total_price: count }, id)
+        if (data) {
+          const results = await updateOrder({ quantity: quantity, total_price: count }, id)
+          if (results) {
+            responseStandard(res, 'Success update cart')
+          } else {
+            responseStandard(res, 'Failed update cart', {}, 400, false)
+          }
+        } else {
+          responseStandard(res, 'Failed update cart', {}, 400, false)
+        }
       }
     }
   }

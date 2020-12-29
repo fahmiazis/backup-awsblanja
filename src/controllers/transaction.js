@@ -1,5 +1,6 @@
 const usersModel = require('../models/users')
 const responseStandard = require('../helpers/response')
+const cartModel = require('../models/cart')
 
 function noOrder () {
   return Math.ceil(Math.random() * 100000)
@@ -35,11 +36,17 @@ module.exports = {
                 if (result.affectedRows) {
                   const orderNo = noOrder() + id.toString()
                   const tracking = 'TR' + trackingNumber() + id.toString()
-                  usersModel.createTransaction([product, totalItem, summary, orderNo, tracking, id], result => {
-                    if (result.affectedRows) {
+                  usersModel.createTransaction([product, totalItem, summary, orderNo, tracking, id], resultBuy => {
+                    if (resultBuy.affectedRows) {
                       usersModel.deleteCart(id, result => {
                         if (result.affectedRows) {
-                          responseStandard(res, 'purchase was succesful')
+                          usersModel.updateOrderId([resultBuy.insertId, id], results => {
+                            if (results.affectedRows) {
+                              responseStandard(res, 'purchase was succesful')
+                            } else {
+                              responseStandard(res, 'transaction failed', {}, 400, false)
+                            }
+                          })
                         } else {
                           responseStandard(res, 'transaction failed', {}, 400, false)
                         }
@@ -55,8 +62,12 @@ module.exports = {
             } else {
               responseStandard(res, 'less balance', {}, 401, false)
             }
+          } else {
+            responseStandard(res, 'you have no item', {}, 400, false)
           }
         })
+      } else {
+        responseStandard(res, 'you have no item', {}, 400, false)
       }
     })
   },
@@ -73,6 +84,16 @@ module.exports = {
         })
       } else {
         responseStandard(res, 'you haven\'t history transaction')
+      }
+    })
+  },
+  getOrderDetails: (req, res) => {
+    const id = req.params.id
+    cartModel.getOrderDetails(id, result => {
+      if (result.length) {
+        responseStandard(res, 'Success get order details', { data: result })
+      } else {
+        responseStandard(res, 'Data not found', {}, 400, false)
       }
     })
   }

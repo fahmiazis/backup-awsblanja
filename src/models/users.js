@@ -195,8 +195,28 @@ module.exports = {
       cb(result)
     })
   },
+  updateOrderId: (arr, cb) => {
+    db.query(`UPDATE order_details SET order_id=${arr[0]}, isBuy=1 WHERE user_id=${arr[1]} AND isBuy=0`, (_err, result, _field) => {
+      cb(result)
+    })
+  },
   createTransaction: (arr, cb) => {
     db.query(`INSERT INTO transaction (item, amount, delivery, summary, order_no, no_tracking, user_id) VALUES ('${arr[0]}', ${arr[1]}, 30000, ${arr[2]}, ${arr[3]}, '${arr[4]}', ${arr[5]})`, (_err, result, _field) => {
+      cb(result)
+    })
+  },
+  updateTransaction: (arr, cb) => {
+    db.query(`UPDATE transaction SET item='${arr[0]}', amount=${arr[1]}, delivery=30000, summary=${arr[2]}, order_no=${arr[3]}, no_tracking='${arr[4]}', isBuy=1 WHERE user_id=${arr[5]} AND isBuy = 0`, (_err, result, _field) => {
+      cb(result)
+    })
+  },
+  createTransactionId: (arr, cb) => {
+    db.query(`INSERT INTO transaction (user_id) VALUES (${arr[0]})`, (_err, result, _field) => {
+      cb(result)
+    })
+  },
+  deleteTransaction: (id, cb) => {
+    db.query(`DELETE FROM transaction WHERE user_id=${id} AND isBuy=0`, (_err, result, _field) => {
       cb(result)
     })
   },
@@ -206,7 +226,7 @@ module.exports = {
     })
   },
   getHistoryTransaction: (id, cb) => {
-    db.query(`SELECT * FROM transaction WHERE user_id=${id}`, (_err, result, _field) => {
+    db.query(`SELECT * FROM transaction WHERE user_id=${id} ORDER BY id desc`, (_err, result, _field) => {
       cb(result)
     })
   },
