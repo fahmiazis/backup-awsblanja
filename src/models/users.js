@@ -230,6 +230,11 @@ module.exports = {
       cb(result)
     })
   },
+  getHistoryDetail: (id, cb) => {
+    db.query(`SELECT * FROM transaction WHERE id=${id}`, (_err, result, _field) => {
+      cb(result)
+    })
+  },
   getHistoryCount: (id, cb) => {
     db.query(`SELECT COUNT(*) AS count FROM transaction WHERE user_id=${id}`, (_err, result, _field) => {
       cb(result)

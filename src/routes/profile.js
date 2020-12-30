@@ -1,7 +1,7 @@
 const { Router } = require('express')
 const { getProfile, getCheckout, updateImage, getAddress, updateProfileVii } = require('../controllers/profile')
 const { editAddress, changeStatus, deleteAddress, getPriAddress } = require('../controllers/users')
-const { buy, getHistoryTransaction, getOrderDetails } = require('../controllers/transaction')
+const { buy, getHistoryTransaction, getOrderDetails, getHistoryDetails } = require('../controllers/transaction')
 const uploadHelper = require('../helpers/upload')
 const router = Router()
 
@@ -17,6 +17,7 @@ router.patch('/address/change/:id', changeStatus)
 router.delete('/address/delete/:id', deleteAddress)
 router.post('/buy', buy)
 router.get('/history', getHistoryTransaction)
+router.get('/history/detail/:id', getHistoryDetails)
 router.get('/order/:id', getOrderDetails)
 
 module.exports = router

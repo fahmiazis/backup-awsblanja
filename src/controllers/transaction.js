@@ -96,5 +96,15 @@ module.exports = {
         responseStandard(res, 'Data not found', {}, 400, false)
       }
     })
+  },
+  getHistoryDetails: (req, res) => {
+    const id = req.params.id
+    usersModel.getHistoryDetail(id, result => {
+      if (result.length) {
+        responseStandard(res, 'Success get history details', { data: result })
+      } else {
+        responseStandard(res, 'Data not found', {}, 400, false)
+      }
+    })
   }
 }
