@@ -114,13 +114,7 @@ module.exports = {
           const order = sum.reduce((total, value) => total + value, 0)
           const delivery = 30000
           const summary = order + delivery
-          usersModel.getPriAddress(id, data2 => {
-            if (data2.length) {
-              responseStandard(res, 'This is your item', { product: data1, address: data2, summary: summary, order: order, delivery: delivery })
-            } else {
-              responseStandard(res, 'fail to show your checkuot page', {}, 401, false)
-            }
-          })
+          responseStandard(res, 'This is your item', { product: data1, summary: summary, order: order, delivery: delivery })
         } else {
           responseStandard(res, 'fail to show your checkuot page', {}, 401, false)
         }
